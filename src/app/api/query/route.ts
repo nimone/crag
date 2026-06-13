@@ -19,7 +19,7 @@ export async function POST(req: Request) {
 
       // Langfuse tracing
       let lf: ReturnType<typeof makeLangfuse> | null = null;
-      let trace: ReturnType<typeof lf.trace> | null = null;
+      let trace: ReturnType<ReturnType<typeof makeLangfuse>["trace"]> | null = null;
       try {
         lf = makeLangfuse();
         trace = lf.trace({ name: "crag-query", input: { query } });
