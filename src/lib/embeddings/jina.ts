@@ -7,7 +7,7 @@ interface JinaEmbedRequest {
   input: string[];
   task: JinaTask;
   dimensions?: number;
-  truncate?: "END" | "NONE";
+  truncate?: boolean;
 }
 
 interface JinaEmbedResponse {
@@ -36,7 +36,7 @@ export function makeJinaEmbedder(
         input: texts,
         task: jinaTask,
         dimensions: 1024, // match pgvector schema
-        truncate: "END",  // silently trim chunks exceeding the 8194-token limit
+        truncate: true,  // silently trim chunks exceeding the 8194-token limit
       } satisfies JinaEmbedRequest),
     });
 

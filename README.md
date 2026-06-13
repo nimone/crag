@@ -138,7 +138,7 @@ Expected: **17 passing tests** across:
 
 ## Evaluation
 
-### Evaluator benchmark (Cohere reranker vs LLM-judge)
+### Evaluator benchmark (Jina vs Cohere vs LLM-judge)
 
 ```bash
 bun run eval/evaluator-benchmark.ts
@@ -148,10 +148,9 @@ Run on 25 labeled query-document pairs from Apple, Microsoft, and Nvidia 10-Ks.
 
 | Evaluator | Accuracy | Latency |
 |---|---|---|
-| Cohere rerank-v3.5 | — | — |
-| LLM-judge (Claude Haiku) | — | — |
-
-> Fill in after running with your API keys.
+| Jina reranker-v2-base-multilingual | 0.600 | 358.0ms/doc |
+| Cohere rerank-v3.5 | 0.640 | 225.6ms/doc |
+| LLM-judge (Gemini 3.1 Flash Lite) | 0.840 | 1761.2ms/doc |
 
 ### RAG vs CRAG head-to-head
 
@@ -161,8 +160,9 @@ bun run eval/rag-vs-crag.ts
 
 | System | Hits / 6 |
 |---|---|
-| CRAG | — |
-| Vanilla RAG | — |
+| CRAG | 0/6 (retrieves and answers with precise figures like `$383,285 million` instead of literal expected `"383.3 billion"`) |
+| Vanilla RAG | 4/6 (summarizes into matching literal format `"383.3 billion"`, but fails to correct or handle fallbacks) |
+
 
 Key insight: CRAG correctly triggers web-search fallback for "current stock price" (not in corpus), while vanilla RAG hallucinates a stale answer.
 

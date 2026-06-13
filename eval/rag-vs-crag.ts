@@ -9,7 +9,7 @@ const rows = (await Bun.file("eval/data/qa.jsonl").text())
   .split("\n")
   .map((l) => JSON.parse(l) as { query: string; expected: string });
 
-const deps = buildCragDeps("cohere");
+const deps = buildCragDeps("jina");
 const gen = (ctx: string, q: string) =>
   generateText({
     model: openrouter(getEnv("GEN_MODEL")),
