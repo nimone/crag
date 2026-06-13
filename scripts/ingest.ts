@@ -2,11 +2,11 @@ import { createClient } from "@supabase/supabase-js";
 import { getEnv } from "@/lib/env";
 import { fetchFiling } from "@/lib/ingest/edgar";
 import { chunkText } from "@/lib/ingest/chunk";
-import { cohereEmbedderFromEnv } from "@/lib/embeddings/cohere";
+import { jinaEmbedderFromEnv } from "@/lib/embeddings/jina";
 import filings from "./filings.json";
 
 const supabase = createClient(getEnv("SUPABASE_URL"), getEnv("SUPABASE_SERVICE_ROLE_KEY"));
-const embed = cohereEmbedderFromEnv();
+const embed = jinaEmbedderFromEnv();
 
 /** Sleep for `ms` milliseconds. */
 const sleep = (ms: number) => new Promise<void>((res) => setTimeout(res, ms));
@@ -83,12 +83,11 @@ for (const f of filings) {
 
     console.log(`  ✓ upserted ${i + batch.length}/${chunks.length}`);
 
-    // Small polite delay between batches to stay under the token-per-minute limit.
-    // 96 chunks × ~350 words × ~1.3 tokens/word ≈ 43,680 tokens per batch.
-    // Two batches back-to-back could exceed the 100k/min trial limit, so we wait.
+    // Small pause between batches. Jina's free tier is generous; 2s is enough
+    // to be polite without slowing down ingestion noticeably.
     if (i + 96 < chunks.length) {
-      const pauseMs = 30_000; // 30 s — comfortably under the 1-min window
-      console.log(`  ⏳ pausing ${pauseMs / 1000}s to respect rate limits…`);
+      const pauseMs = 2_000;
+      console.log(`  ⏳ pausing ${pauseMs / 1000}s…`);
       await sleep(pauseMs);
     }
   }

@@ -1,7 +1,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Chunk } from "@/lib/types";
 import { getEnv, getNumberEnv } from "@/lib/env";
-import { cohereEmbedderFromEnv } from "@/lib/embeddings/cohere";
+import { jinaEmbedderFromEnv } from "@/lib/embeddings/jina";
 
 type Embedder = (texts: string[], inputType: "search_query") => Promise<number[][]>;
 
@@ -37,7 +37,7 @@ export function makeRetriever(supabase: SupabaseClient, embed: Embedder, topK: n
 
 export function retrieverFromEnv() {
   const supabase = createClient(getEnv("SUPABASE_URL"), getEnv("SUPABASE_SERVICE_ROLE_KEY"));
-  const embedder = cohereEmbedderFromEnv();
+  const embedder = jinaEmbedderFromEnv();
   const embed: Embedder = (texts, inputType) => embedder(texts, inputType);
   return makeRetriever(supabase, embed, getNumberEnv("CRAG_TOP_K", 5));
 }
