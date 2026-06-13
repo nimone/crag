@@ -49,15 +49,21 @@ export async function POST(req: Request) {
         }
       }
 
-      const { textStream } = streamText({
-        model: openrouter(getEnv("GEN_MODEL")),
-        prompt:
-          `Answer the QUESTION using only the CONTEXT. Cite sources. ` +
-          `If the context is insufficient, say so.\n` +
-          `CONTEXT:\n${result.context}\n\nQUESTION: ${query}`,
-      });
-      for await (const delta of textStream) send({ type: "token", delta });
-      send({ type: "done" });
+      try {
+        const { textStream } = streamText({
+          model: openrouter(getEnv("GEN_MODEL")),
+          prompt:
+            `Answer the QUESTION using only the CONTEXT. Cite sources. ` +
+            `If the context is insufficient, say so.\n` +
+            `CONTEXT:\n${result.context}\n\nQUESTION: ${query}`,
+        });
+        for await (const delta of textStream) send({ type: "token", delta });
+        send({ type: "done" });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        console.error("[crag] generation failed:", message);
+        send({ type: "error", message });
+      }
 
       if (lf) {
         try {

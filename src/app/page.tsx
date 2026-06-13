@@ -43,6 +43,7 @@ export default function Home() {
           if (msg.type === "token") setAnswer((a) => a + msg.delta);
           else if (msg.type === "result_meta") setAction(msg.action);
           else if (msg.type === "trace") setEvents((e) => [...e, msg]);
+          else if (msg.type === "error") setAnswer(`Error: ${msg.message}`);
         }
       }
     } catch (err) {
