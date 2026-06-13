@@ -52,7 +52,20 @@ async function withRetry<T>(
 }
 
 for (const f of filings) {
-  console.log(`\nFetching ${f.company} ${f.filingType}…`);
+  console.log(`\nChecking ${f.company} ${f.filingType} (${f.fiscalPeriod})…`);
+  
+  // Check if already ingested to avoid re-embedding
+  const { count, error: countErr } = await supabase
+    .from("filing_chunks")
+    .select("id", { count: "exact", head: true })
+    .like("id", `${f.company}-${f.fiscalPeriod}-%`);
+
+  if (!countErr && count && count > 0) {
+    console.log(`  ✓ Already ingested (${count} chunks). Skipping.`);
+    continue;
+  }
+
+  console.log(`  Fetching filing from EDGAR…`);
   const text = await fetchFiling(f.url);
   const chunks = chunkText(text, { size: 350, overlap: 50 });
   console.log(`  ${chunks.length} chunks to embed and upsert`);

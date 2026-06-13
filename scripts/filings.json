@@ -6,15 +6,33 @@
     "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019323000106/aapl-20230930.htm"
   },
   {
+    "company": "Apple",
+    "filingType": "10-K",
+    "fiscalPeriod": "FY2022",
+    "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000108/aapl-20220924.htm"
+  },
+  {
     "company": "Microsoft",
     "filingType": "10-K",
     "fiscalPeriod": "FY2023",
     "url": "https://www.sec.gov/Archives/edgar/data/789019/000095017023035122/msft-20230630.htm"
   },
   {
+    "company": "Microsoft",
+    "filingType": "10-K",
+    "fiscalPeriod": "FY2022",
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000156459022026876/msft-10k_20220630.htm"
+  },
+  {
     "company": "Nvidia",
     "filingType": "10-K",
     "fiscalPeriod": "FY2024",
     "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581024000029/nvda-20240128.htm"
+  },
+  {
+    "company": "Nvidia",
+    "filingType": "10-K",
+    "fiscalPeriod": "FY2023",
+    "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581023000017/nvda-20230129.htm"
   }
 ]

@@ -21,24 +21,24 @@ import { Inspector, type TraceEvent } from "./components/Inspector";
 
 const ANALYST_QUESTIONS = [
   {
-    label: "Nvidia AI Trajectory",
-    query: "Analyze Nvidia's data center revenue trajectory in FY2024 and its main driver."
+    label: "Nvidia Data Center YoY",
+    query: "Compare Nvidia's Data Center revenue between FY2023 and FY2024 and outline the growth percentage."
   },
   {
-    label: "Apple Sales Decomp",
-    query: "Decompose Apple's net sales by product segment and geographic region for fiscal 2023."
+    label: "Microsoft Intelligent Cloud Growth",
+    query: "Compare Microsoft's Intelligent Cloud revenue and Azure growth drivers between FY2022 and FY2023."
   },
   {
-    label: "Microsoft Cloud Drivers",
-    query: "Summarize Microsoft's principal growth drivers for Intelligent Cloud in FY23."
+    label: "Apple Revenue Segmentation",
+    query: "Analyze the product segment breakdown (Services, iPhone, Mac, iPad) of Apple's net sales for FY2023."
   },
   {
-    label: "Apple Regulatory Risks",
-    query: "What were the primary legal and regulatory risk factors disclosed by Apple in its 2023 10-K?"
+    label: "Apple Risk Comparison",
+    query: "What were the primary legal, regulatory, and supply chain risk factors disclosed by Apple in its 2023 10-K?"
   },
   {
-    label: "Real-time Web Search Fallback",
-    query: "What is Apple's current stock price and key market drivers today?"
+    label: "Real-time Stock Market Fallback",
+    query: "What is Nvidia's current stock price and recent market capital trends today?"
   }
 ];
 
