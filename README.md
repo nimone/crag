@@ -2,6 +2,8 @@
 
 A production-grade **Corrective RAG (CRAG)** system that grades its own retrieval quality, self-corrects via decompose-recompose and web-search fallback, streams answers, and visualizes the mechanism in a real-time inspector UI.
 
+<img width="1302" height="803" alt="image" src="https://github.com/user-attachments/assets/58dd364c-40ca-4597-8bf1-1afba551b9e0" />
+
 ## Architecture
 
 ```
