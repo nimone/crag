@@ -12,7 +12,6 @@ export function makeWebSearch(apiKey: string, fetchFn: typeof fetch = fetch) {
         api_key: apiKey,
         query,
         max_results: 5,
-        include_domains: ["wikipedia.org"], // paper prioritizes authoritative sources; relax as needed
       }),
     });
     if (!res.ok) throw new Error(`Tavily error ${res.status}`);
