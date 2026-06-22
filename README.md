@@ -76,8 +76,7 @@ Required env vars:
 | `OPENROUTER_API_KEY` | OpenRouter API key |
 | `COHERE_API_KEY` | Cohere API key (embeddings + rerank) |
 | `TAVILY_API_KEY` | Tavily API key (web search) |
-| `SUPABASE_URL` | Supabase project URL |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key |
+| `DB_URL` | Postgres connection string (with pgvector) |
 | `LANGFUSE_PUBLIC_KEY` | Langfuse public key (optional) |
 | `LANGFUSE_SECRET_KEY` | Langfuse secret key (optional) |
 
@@ -93,10 +92,10 @@ CRAG config (with defaults):
 
 ### 3. Set up the database
 
-Run `supabase/schema.sql` in your Supabase SQL editor:
+Run `supabase/schema.sql` against your Postgres instance:
 - Enables `pgvector` extension
 - Creates `filing_chunks` table with IVFFlat index
-- Creates `match_chunks` RPC for cosine similarity search
+- Creates `match_chunks` function for cosine similarity search
 
 ### 4. Ingest SEC filings
 

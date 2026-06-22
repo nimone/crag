@@ -1,11 +1,12 @@
-import { createClient } from "@supabase/supabase-js";
 import { getEnv } from "@/lib/env";
+import { query, getPool } from "@/lib/db";
 import { fetchFiling } from "@/lib/ingest/edgar";
 import { chunkText } from "@/lib/ingest/chunk";
 import { jinaEmbedderFromEnv } from "@/lib/embeddings/jina";
 import filings from "./filings.json";
 
-const supabase = createClient(getEnv("SUPABASE_URL"), getEnv("SUPABASE_SERVICE_ROLE_KEY"));
+// Ensure DB_URL is set early
+getEnv("DB_URL");
 const embed = jinaEmbedderFromEnv();
 
 /** Sleep for `ms` milliseconds. */
@@ -53,14 +54,14 @@ async function withRetry<T>(
 
 for (const f of filings) {
   console.log(`\nChecking ${f.company} ${f.filingType} (${f.fiscalPeriod})…`);
-  
-  // Check if already ingested to avoid re-embedding
-  const { count, error: countErr } = await supabase
-    .from("filing_chunks")
-    .select("id", { count: "exact", head: true })
-    .like("id", `${f.company}-${f.fiscalPeriod}-%`);
 
-  if (!countErr && count && count > 0) {
+  // Check if already ingested to avoid re-embedding
+  const [{ count }] = await query<{ count: number }>(
+    "SELECT count(*)::int as count FROM filing_chunks WHERE id LIKE $1",
+    [`${f.company}-${f.fiscalPeriod}-%`],
+  );
+
+  if (count > 0) {
     console.log(`  ✓ Already ingested (${count} chunks). Skipping.`);
     continue;
   }
@@ -88,11 +89,30 @@ for (const f of filings) {
       fiscal_period: f.fiscalPeriod,
       section: "body",
       url: f.url,
-      embedding: vectors[j],
+      embedding: `[${vectors[j].join(",")}]`,
     }));
 
-    const { error } = await supabase.from("filing_chunks").upsert(rows);
-    if (error) throw new Error(error.message);
+    // Bulk upsert: insert with ON CONFLICT id DO UPDATE
+    // Build parameterised placeholders ($1, $2, ...) manually for the batch
+    const colNames = ["id", "text", "company", "filing_type", "fiscal_period", "section", "url", "embedding"];
+    const valueRows = rows.map((_, rIdx) => {
+      const offset = rIdx * colNames.length;
+      return `(${colNames.map((_, cIdx) => `$${offset + cIdx + 1}`).join(", ")})`;
+    });
+    const params: unknown[] = [];
+    for (const r of rows) {
+      params.push(r.id, r.text, r.company, r.filing_type, r.fiscal_period, r.section, r.url, r.embedding);
+    }
+
+    const sql = `
+      INSERT INTO filing_chunks (${colNames.join(", ")})
+      VALUES ${valueRows.join(", ")}
+      ON CONFLICT (id) DO UPDATE SET
+        text = EXCLUDED.text,
+        embedding = EXCLUDED.embedding
+    `;
+
+    await query(sql, params);
 
     console.log(`  ✓ upserted ${i + batch.length}/${chunks.length}`);
 
@@ -107,3 +127,6 @@ for (const f of filings) {
 }
 
 console.log("\n✅ Ingestion complete.");
+
+// Drain the pool so the script exits cleanly
+await getPool().end();

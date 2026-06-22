@@ -6,8 +6,7 @@ test("buildCragDeps reads thresholds from env and defaults to Jina evaluator", a
   process.env.OPENROUTER_API_KEY = "k";
   process.env.JINA_API_KEY = "k";
   process.env.TAVILY_API_KEY = "k";
-  process.env.SUPABASE_URL = "http://localhost";
-  process.env.SUPABASE_SERVICE_ROLE_KEY = "k";
+  process.env.DB_URL = "postgresql://localhost/mydb";
   process.env.JUDGE_MODEL = "m";
   const { buildCragDeps } = await import("@/lib/crag/from-env");
   const deps = buildCragDeps("jina");
