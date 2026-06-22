@@ -19,30 +19,21 @@ type MatchChunkRow = {
 export function makeRetriever(dbg: typeof query, embed: Embedder, topK: number) {
   return async (queryText: string): Promise<Chunk[]> => {
     const [embedding] = await embed([queryText], "search_query");
-    console.log(`[retriever] embedding dims: ${embedding.length}, topK: ${topK}`);
-    const vectorStr = `[${embedding.join(",")}]`;
-    console.log(`[retriever] vectorStr length: ${vectorStr.length}`);
-    try {
-      const rows = await dbg<MatchChunkRow>(
-        "SELECT * FROM match_chunks($1::vector(1024), $2::int)",
-        [vectorStr, topK],
-      );
-      console.log(`[retriever] match_chunks returned ${rows.length} rows`);
-      return rows.map((r) => ({
-        id: r.id,
-        text: r.text,
-        metadata: {
-          company: r.company,
-          filingType: r.filing_type as Chunk["metadata"]["filingType"],
-          fiscalPeriod: r.fiscal_period,
-          section: r.section,
-          url: r.url,
-        },
-      }));
-    } catch (err) {
-      console.error("[retriever] SQL error:", err instanceof Error ? err.message : String(err));
-      throw err;
-    }
+    const rows = await dbg<MatchChunkRow>(
+      "SELECT * FROM match_chunks($1::vector(1024), $2::int)",
+      [`[${embedding.join(",")}]`, topK],
+    );
+    return rows.map((r) => ({
+      id: r.id,
+      text: r.text,
+      metadata: {
+        company: r.company,
+        filingType: r.filing_type as Chunk["metadata"]["filingType"],
+        fiscalPeriod: r.fiscal_period,
+        section: r.section,
+        url: r.url,
+      },
+    }));
   };
 }
 
